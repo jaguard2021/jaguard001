@@ -1,0 +1,105 @@
+/**
+ *Submitted for verification at basescan.org on 2023-07-31
+*/
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+/**
+ * @title MyNFT
+ * @dev Implementation of the ERC-721 contract for "STAR" NFTs with symbol "STR".
+ *      The maximum number of NFTs that can be minted is 1000.
+ *      This contract includes functions to mint NFTs, transfer ownership of NFTs,
+ *      burn NFTs, and get information about NFTs.
+ *
+ * @notice Created by [Your Name or Organization].
+ * @dev This is an example contract for educational purposes. Make sure to test and audit
+ *      the contract's security before deploying it in a production environment.
+ *
+ * @notice License: MIT License
+ * @dev Copyright © [year] [copyright owner]
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial
+ * portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+contract SIXNINE_NFT {
+    string private constant name = "SIXNINE";
+    string private constant symbol = "69";
+    uint256 private constant maxSupply = 1000;
+
+    // Event emitted when an NFT is minted
+    event Minted(address indexed owner, uint256 indexed tokenId, string tokenURI);
+
+    // Event emitted when an NFT is burned
+    event Burned(address indexed owner, uint256 indexed tokenId);
+
+    // Struct to store NFT information
+    struct NFT {
+        string tokenURI;
+    }
+
+    // Array to store NFTs based on token ID
+    NFT[] private nfts;
+
+    // Mapping to store ownership of NFTs based on token ID
+    mapping(uint256 => address) private owners;
+
+    // Function to mint a new NFT
+    function mintNFT(string memory tokenURI) public {
+        require(nfts.length < maxSupply, "Maximum NFT limit reached");
+        uint256 tokenId = nfts.length;
+        NFT memory newNFT = NFT(tokenURI);
+        nfts.push(newNFT);
+        owners[tokenId] = msg.sender;
+
+        emit Minted(msg.sender, tokenId, tokenURI);
+    }
+
+    // Function to get NFT information based on token ID
+    function getNFT(uint256 tokenId) public view returns (string memory) {
+        require(tokenId < nfts.length, "Invalid Token ID");
+        return nfts[tokenId].tokenURI;
+    }
+
+    // Function to transfer ownership of an NFT
+    function transferNFT(address to, uint256 tokenId) public {
+        require(msg.sender == owners[tokenId], "You are not the owner of this NFT");
+        owners[tokenId] = to;
+    }
+
+    // Function to burn an NFT
+    function burnNFT(uint256 tokenId) public {
+        require(msg.sender == owners[tokenId], "You are not the owner of this NFT");
+        delete owners[tokenId];
+        delete nfts[tokenId];
+
+        emit Burned(msg.sender, tokenId);
+    }
+
+    // Function to get the token name
+    function getName() public pure returns (string memory) {
+        return name;
+    }
+
+    // Function to get the token symbol
+    function getSymbol() public pure returns (string memory) {
+        return symbol;
+    }
+
+    // Function to get the maximum supply of NFTs that can be minted
+    function getMaxSupply() public pure returns (uint256) {
+        return maxSupply;
+    }
+}
